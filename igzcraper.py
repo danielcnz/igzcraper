@@ -1,77 +1,68 @@
 import streamlit as st
 import yt_dlp
 import os
-import io
 
-# 1. Configuración estética de la interfaz
-st.set_page_config(page_title="IG Downloader Pro", page_icon="📲", layout="centered")
+# Configuración de página
+st.set_page_config(page_title="IG Downloader Pro", page_icon="📸", layout="wide")
 
-# Estilo personalizado con CSS
+# CSS Personalizado para un look moderno
 st.markdown("""
     <style>
     .main {
-        background-color: #f0f2f6;
+        background-color: #fafafa;
     }
-    .stButton>button {
-        width: 100%;
-        border-radius: 5px;
-        height: 3em;
-        background-color: #E1306C;
+    div.stButton > button:first-child {
+        background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
         color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 10px;
+        font-weight: bold;
+        width: 100%;
+    }
+    .stTextInput > div > div > input {
+        border-radius: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("📸 Instagram Media Downloader")
-st.subheader("Descarga Reels, Videos y Fotos al instante")
+# Layout con columnas para centrar el contenido
+col1, col2, col3 = st.columns([1, 2, 1])
 
-# 2. Entrada de usuario
-url = st.text_input("Pega el enlace de Instagram aquí:", placeholder="https://www.instagram.com/reels/...")
+with col2:
+    st.title("📸 IG Video & Photo Downloader")
+    st.info("💡 **Instrucciones:** Pega el link de un post público o Reel y presiona el botón.")
 
-# 3. Lógica de descarga
-if url:
-    if "instagram.com" not in url:
-        st.error("Por favor, introduce una URL válida de Instagram.")
-    else:
-        try:
-            # Configuramos yt-dlp para que no guarde archivos permanentemente
-            # Usamos un nombre genérico para procesarlo
-            ydl_opts = {
-                'format': 'best',
-                'quiet': True,
-                'no_warnings': True,
-                'outtmpl': 'file_to_download.%(ext)s',
-            }
+    # Caja de entrada
+    url = st.text_input("", placeholder="https://www.instagram.com/p/...")
 
-            with st.spinner("🕵️ Analizando y preparando el archivo..."):
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    # Extraer info sin descargar primero para verificar
-                    info = ydl.extract_info(url, download=True)
-                    filename = ydl.prepare_filename(info)
+    if st.button("🚀 Preparar mi descarga"):
+        if url:
+            try:
+                with st.spinner("Procesando... esto puede tardar unos segundos"):
+                    ydl_opts = {
+                        'format': 'best',
+                        'outtmpl': 'descarga_temp_%(title)s.%(ext)s',
+                        'quiet': True,
+                    }
+                    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                        info = ydl.extract_info(url, download=True)
+                        filename = ydl.prepare_filename(info)
                     
-                    # Determinar el tipo de archivo (MIME type)
-                    extension = filename.split('.')[-1]
-                    mime_type = "video/mp4" if extension == "mp4" else "image/jpeg"
+                    if os.path.exists(filename):
+                        with open(filename, "rb") as file:
+                            st.download_button(
+                                label="✅ Descarga lista - Haz clic aquí",
+                                data=file,
+                                file_name=filename.replace("descarga_temp_", ""),
+                                mime="video/mp4" if filename.endswith(".mp4") else "image/jpeg"
+                            )
+                        # Opcional: Borrar archivo local después de generar el botón
+                        os.remove(filename)
+            except Exception as e:
+                st.error("No pudimos obtener el video. Verifica que el link sea de una cuenta pública.")
+        else:
+            st.warning("Primero debes pegar una URL.")
 
-                    # 4. Crear el botón de descarga real para el navegador
-                    with open(filename, "rb") as f:
-                        file_data = f.read()
-                        
-                    st.success("¡Archivo listo!")
-                    st.download_button(
-                        label="⬇️ Hacer clic para Guardar Archivo",
-                        data=file_data,
-                        file_name=f"instagram_download.{extension}",
-                        mime=mime_type
-                    )
-                    
-                    # 5. Limpieza: Borrar el archivo del servidor de Streamlit
-                    os.remove(filename)
-
-        except Exception as e:
-            st.error(f"Ups! Algo salió mal. Es posible que el perfil sea privado o el link haya expirado.")
-            st.info("Tip: Asegúrate de que el post sea de una cuenta pública.")
-
-# Pie de página
-st.markdown("---")
-st.caption("Desarrollado con Python & Streamlit • Recuerda respetar los derechos de autor.")
+    st.markdown("---")
+    st.caption("Creado con Python y Streamlit")
