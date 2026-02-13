@@ -3,7 +3,7 @@ import yt_dlp
 import os
 
 # Configuración de página
-st.set_page_config(page_title="IG Downloader Pro", page_icon="📸", layout="wide")
+st.set_page_config(page_title="IG Downloader Pro - Canada Zoom", page_icon="📸", layout="wide")
 
 # CSS Personalizado para un look moderno
 st.markdown("""
@@ -30,7 +30,7 @@ st.markdown("""
 col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
-    st.title("📸 IG Video & Photo Downloader")
+    st.title("📸 IG Video & Photo Downloader by Canada Zoom Corporation")
     st.info("💡 **Instrucciones:** Pega el link de un post público o Reel y presiona el botón.")
 
     # Caja de entrada
