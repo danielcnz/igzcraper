@@ -3,7 +3,7 @@ import yt_dlp
 import os
 
 # Configuración de página
-st.set_page_config(page_title="IG Downloader Pro - Canada Zoom", page_icon="📸", layout="wide")
+st.set_page_config(page_title="IG Downloader Pro", page_icon="📸", layout="wide")
 
 # CSS Personalizado para un look moderno
 st.markdown("""
@@ -40,20 +40,16 @@ with col2:
         if url:
             try:
                 with st.spinner("Procesando... esto puede tardar unos segundos"):
-                   # Asegúrate de que ydl_opts esté alineado con el código de arriba
-            ydl_opts = {
-                'format': 'best',
-                'outtmpl': 'descarga_temp_%(title)s.%(ext)s',
-                'quiet': True,
-                'no_warnings': True,
-                'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
-                'referer': 'https://www.google.com/',
-            }
-
-            # Esta línea DEBE tener la misma sangría que la definición de ydl_opts
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(url, download=True)
-                filename = ydl.prepare_filename(info)
+                    # Configuración optimizada para evitar bloqueos
+                    ydl_opts = {
+                        'format': 'best',
+                        'outtmpl': 'descarga_temp_%(title)s.%(ext)s',
+                        'quiet': True,
+                        'no_warnings': True,
+                        'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+                        'referer': 'https://www.google.com/',
+                    }
+                    
                     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                         info = ydl.extract_info(url, download=True)
                         filename = ydl.prepare_filename(info)
@@ -66,12 +62,13 @@ with col2:
                                 file_name=filename.replace("descarga_temp_", ""),
                                 mime="video/mp4" if filename.endswith(".mp4") else "image/jpeg"
                             )
-                        # Opcional: Borrar archivo local después de generar el botón
+                        # Borrar archivo local del servidor después de preparar el botón
                         os.remove(filename)
             except Exception as e:
-                st.error("No pudimos obtener el video. Verifica que el link sea de una cuenta pública.")
+                st.error(f"No pudimos obtener el recurso. Verifica que el link sea de una cuenta pública.")
+                st.caption(f"Detalle del error: {e}")
         else:
             st.warning("Primero debes pegar una URL.")
 
     st.markdown("---")
-    st.caption("Creado con Python y Streamlit")
+    st.caption("Creado por Canada Zoom Corporation con Python y Streamlit")
