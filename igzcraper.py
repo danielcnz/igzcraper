@@ -40,11 +40,15 @@ with col2:
         if url:
             try:
                 with st.spinner("Procesando... esto puede tardar unos segundos"):
-                    ydl_opts = {
-                        'format': 'best',
-                        'outtmpl': 'descarga_temp_%(title)s.%(ext)s',
-                        'quiet': True,
-                    }
+                    # Dentro de tu lógica de descarga, actualiza las ydl_opts:
+                        ydl_opts = {
+                            'format': 'best',
+                            'outtmpl': 'descarga_temp_%(title)s.%(ext)s',
+                            'quiet': True,
+                            'no_warnings': True,
+                            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+                            'referer': 'https://www.google.com/',
+                        }
                     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                         info = ydl.extract_info(url, download=True)
                         filename = ydl.prepare_filename(info)
